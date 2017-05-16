@@ -44,7 +44,7 @@ set(SOURCE_FILES
     src/psxact.cpp
     src/renderer.cpp
     src/renderer.hpp
-    src/utility.hpp)
+    src/utility.hpp src/cdrom/cpu/cpu.hpp src/cdrom/cpu/cpu.cpp)
 
 add_executable(psxact ${SOURCE_FILES})
 
