@@ -21,9 +21,33 @@ namespace cdrom {
 
       bool stop;
       bool wait;
+      bool irq;
     };
 
     void tick(state_t *state);
+
+    uint8_t pack_flags(state_t *state);
+
+    void unpack_flags(state_t *state, uint8_t data);
+
+    // alu
+
+    uint8_t alu_add(state_t *state, uint8_t a, uint8_t b, int carry = 0);
+    uint8_t alu_neg(state_t *state, uint8_t data);
+    uint8_t alu_sub(state_t *state, uint8_t a, uint8_t b, int carry = 0);
+
+    uint8_t alu_and(state_t *state, uint8_t data);
+    uint8_t alu_asr(state_t *state, uint8_t data);
+    uint8_t alu_com(state_t *state, uint8_t data);
+    uint8_t alu_dec(state_t *state, uint8_t data);
+    uint8_t alu_eor(state_t *state, uint8_t data);
+    uint8_t alu_inc(state_t *state, uint8_t data);
+    uint8_t alu_lsl(state_t *state, uint8_t data);
+    uint8_t alu_lsr(state_t *state, uint8_t data);
+    uint8_t alu_ora(state_t *state, uint8_t data);
+    uint8_t alu_rol(state_t *state, uint8_t data);
+    uint8_t alu_ror(state_t *state, uint8_t data);
+    uint8_t alu_tst(state_t *state, uint8_t data);
 
     // addressing modes
 
@@ -33,6 +57,7 @@ namespace cdrom {
     uint16_t am_ix2(state_t *state);
     uint16_t am_ix1(state_t *state);
     uint16_t am_ix (state_t *state);
+    uint16_t am_rel(state_t *state);
 
     // instructions
 
@@ -60,39 +85,11 @@ namespace cdrom {
     void op_rorx(state_t *state);
     void op_tstx(state_t *state);
 
-    void op_brset0(state_t *state);
-    void op_brclr0(state_t *state);
-    void op_brset1(state_t *state);
-    void op_brclr1(state_t *state);
-    void op_brset2(state_t *state);
-    void op_brclr2(state_t *state);
-    void op_brset3(state_t *state);
-    void op_brclr3(state_t *state);
-    void op_brset4(state_t *state);
-    void op_brclr4(state_t *state);
-    void op_brset5(state_t *state);
-    void op_brclr5(state_t *state);
-    void op_brset6(state_t *state);
-    void op_brclr6(state_t *state);
-    void op_brset7(state_t *state);
-    void op_brclr7(state_t *state);
+    void op_brclr(state_t *state, uint8_t mask, uint16_t address);
+    void op_brset(state_t *state, uint8_t mask, uint16_t address);
 
-    void op_bset0(state_t *state);
-    void op_bclr0(state_t *state);
-    void op_bset1(state_t *state);
-    void op_bclr1(state_t *state);
-    void op_bset2(state_t *state);
-    void op_bclr2(state_t *state);
-    void op_bset3(state_t *state);
-    void op_bclr3(state_t *state);
-    void op_bset4(state_t *state);
-    void op_bclr4(state_t *state);
-    void op_bset5(state_t *state);
-    void op_bclr5(state_t *state);
-    void op_bset6(state_t *state);
-    void op_bclr6(state_t *state);
-    void op_bset7(state_t *state);
-    void op_bclr7(state_t *state);
+    void op_bclr(state_t *state, uint8_t mask, uint16_t address);
+    void op_bset(state_t *state, uint8_t mask, uint16_t address);
 
     void op_bra(state_t *state);
     void op_brn(state_t *state);

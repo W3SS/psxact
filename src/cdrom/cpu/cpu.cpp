@@ -4,44 +4,61 @@ static uint8_t read_byte(uint16_t address) {
   return 0;
 }
 
+static uint8_t read_pc(cdrom::cpu::state_t *state) {
+  uint8_t data = read_byte(state->pc);
+  state->pc++;
+
+  return data;
+}
+
+static void write_byte(uint16_t address, uint8_t data) { }
+
+static void branch(cdrom::cpu::state_t *state, bool condition) {
+  uint16_t target = cdrom::cpu::am_rel(state);
+
+  if (condition) {
+    state->pc = target;
+  }
+}
+
 void cdrom::cpu::tick(state_t *state) {
   auto code = read_byte(state->pc);
   state->pc++;
 
   switch (code) {
-    case 0x00: op_brset0(state); break; // brset0 (btb)
-    case 0x01: op_brclr0(state); break; // brclr0 (btb)
-    case 0x02: op_brset1(state); break; // brset1 (btb)
-    case 0x03: op_brclr1(state); break; // brclr1 (btb)
-    case 0x04: op_brset2(state); break; // brset2 (btb)
-    case 0x05: op_brclr2(state); break; // brclr2 (btb)
-    case 0x06: op_brset3(state); break; // brset3 (btb)
-    case 0x07: op_brclr3(state); break; // brclr3 (btb)
-    case 0x08: op_brset4(state); break; // brset4 (btb)
-    case 0x09: op_brclr4(state); break; // brclr4 (btb)
-    case 0x0a: op_brset5(state); break; // brset5 (btb)
-    case 0x0b: op_brclr5(state); break; // brclr5 (btb)
-    case 0x0c: op_brset6(state); break; // brset6 (btb)
-    case 0x0d: op_brclr6(state); break; // brclr6 (btb)
-    case 0x0e: op_brset7(state); break; // brset7 (btb)
-    case 0x0f: op_brclr7(state); break; // brclr7 (btb)
+    case 0x00: op_brset(state, 0x01, am_dir(state)); break; // brset0 (btb)
+    case 0x01: op_brclr(state, 0x01, am_dir(state)); break; // brclr0 (btb)
+    case 0x02: op_brset(state, 0x02, am_dir(state)); break; // brset1 (btb)
+    case 0x03: op_brclr(state, 0x02, am_dir(state)); break; // brclr1 (btb)
+    case 0x04: op_brset(state, 0x04, am_dir(state)); break; // brset2 (btb)
+    case 0x05: op_brclr(state, 0x04, am_dir(state)); break; // brclr2 (btb)
+    case 0x06: op_brset(state, 0x08, am_dir(state)); break; // brset3 (btb)
+    case 0x07: op_brclr(state, 0x08, am_dir(state)); break; // brclr3 (btb)
+    case 0x08: op_brset(state, 0x10, am_dir(state)); break; // brset4 (btb)
+    case 0x09: op_brclr(state, 0x10, am_dir(state)); break; // brclr4 (btb)
+    case 0x0a: op_brset(state, 0x20, am_dir(state)); break; // brset5 (btb)
+    case 0x0b: op_brclr(state, 0x20, am_dir(state)); break; // brclr5 (btb)
+    case 0x0c: op_brset(state, 0x40, am_dir(state)); break; // brset6 (btb)
+    case 0x0d: op_brclr(state, 0x40, am_dir(state)); break; // brclr6 (btb)
+    case 0x0e: op_brset(state, 0x80, am_dir(state)); break; // brset7 (btb)
+    case 0x0f: op_brclr(state, 0x80, am_dir(state)); break; // brclr7 (btb)
 
-    case 0x10: op_bset0(state); break; // bset0 (bsc)
-    case 0x11: op_bclr0(state); break; // bclr0 (bsc)
-    case 0x12: op_bset1(state); break; // bset1 (bsc)
-    case 0x13: op_bclr1(state); break; // bclr1 (bsc)
-    case 0x14: op_bset2(state); break; // bset2 (bsc)
-    case 0x15: op_bclr2(state); break; // bclr2 (bsc)
-    case 0x16: op_bset3(state); break; // bset3 (bsc)
-    case 0x17: op_bclr3(state); break; // bclr3 (bsc)
-    case 0x18: op_bset4(state); break; // bset4 (bsc)
-    case 0x19: op_bclr4(state); break; // bclr4 (bsc)
-    case 0x1a: op_bset5(state); break; // bset5 (bsc)
-    case 0x1b: op_bclr5(state); break; // bclr5 (bsc)
-    case 0x1c: op_bset6(state); break; // bset6 (bsc)
-    case 0x1d: op_bclr6(state); break; // bclr6 (bsc)
-    case 0x1e: op_bset7(state); break; // bset7 (bsc)
-    case 0x1f: op_bclr7(state); break; // bclr7 (bsc)
+    case 0x10: op_bset(state, 0x01, am_dir(state)); break; // bset0 (bsc)
+    case 0x11: op_bclr(state, 0x01, am_dir(state)); break; // bclr0 (bsc)
+    case 0x12: op_bset(state, 0x02, am_dir(state)); break; // bset1 (bsc)
+    case 0x13: op_bclr(state, 0x02, am_dir(state)); break; // bclr1 (bsc)
+    case 0x14: op_bset(state, 0x04, am_dir(state)); break; // bset2 (bsc)
+    case 0x15: op_bclr(state, 0x04, am_dir(state)); break; // bclr2 (bsc)
+    case 0x16: op_bset(state, 0x08, am_dir(state)); break; // bset3 (bsc)
+    case 0x17: op_bclr(state, 0x08, am_dir(state)); break; // bclr3 (bsc)
+    case 0x18: op_bset(state, 0x10, am_dir(state)); break; // bset4 (bsc)
+    case 0x19: op_bclr(state, 0x10, am_dir(state)); break; // bclr4 (bsc)
+    case 0x1a: op_bset(state, 0x20, am_dir(state)); break; // bset5 (bsc)
+    case 0x1b: op_bclr(state, 0x20, am_dir(state)); break; // bclr5 (bsc)
+    case 0x1c: op_bset(state, 0x40, am_dir(state)); break; // bset6 (bsc)
+    case 0x1d: op_bclr(state, 0x40, am_dir(state)); break; // bclr6 (bsc)
+    case 0x1e: op_bset(state, 0x80, am_dir(state)); break; // bset7 (bsc)
+    case 0x1f: op_bclr(state, 0x80, am_dir(state)); break; // bclr7 (bsc)
 
     case 0x20: op_bra (state); break; // bra  (rel)
     case 0x21: op_brn (state); break; // brn  (rel)
@@ -283,260 +300,291 @@ void cdrom::cpu::tick(state_t *state) {
   }
 }
 
+uint8_t cdrom::cpu::pack_flags(cdrom::cpu::state_t *state){
+  return uint8_t(
+    (1 << 7) |
+    (1 << 6) |
+    (1 << 5) |
+    (state->ccr.h << 4) |
+    (state->ccr.i << 3) |
+    (state->ccr.n << 2) |
+    (state->ccr.z << 1) |
+    (state->ccr.c << 0)
+  );
+}
+
+void ::cdrom::cpu::unpack_flags(cdrom::cpu::state_t *state, uint8_t data) {
+  state->ccr.h = (data >> 4) & 1;
+  state->ccr.i = (data >> 3) & 1;
+  state->ccr.n = (data >> 2) & 1;
+  state->ccr.z = (data >> 1) & 1;
+  state->ccr.c = (data >> 0) & 1;
+}
 
 uint16_t cdrom::cpu::am_dir(state_t *state) {
-  return 0;
+  return read_pc(state);
 }
 
 uint16_t cdrom::cpu::am_ext(state_t *state) {
-  return 0;
+  uint8_t hi = read_pc(state);
+  uint8_t lo = read_pc(state);
+
+  return uint16_t((hi << 8) | lo);
 }
 
 uint16_t cdrom::cpu::am_imm(state_t *state) {
-  return 0;
+  uint16_t ea = state->pc;
+  state->pc++;
+
+  return ea;
 }
 
 uint16_t cdrom::cpu::am_ix2(state_t *state) {
-  return 0;
+  uint16_t ea = am_ext(state);
+
+  return uint16_t(state->x + ea);
 }
 
 uint16_t cdrom::cpu::am_ix1(state_t *state) {
-  return 0;
+  uint16_t nn = read_pc(state);
+
+  return uint16_t(state->x + nn);
 }
 
-uint16_t cdrom::cpu::am_ix(state_t *state) {
-  return 0;
+uint16_t cdrom::cpu::am_ix (state_t *state) {
+  return uint16_t(state->x);
 }
 
+uint16_t cdrom::cpu::am_rel(state_t *state) {
+  uint16_t nn = read_pc(state);
+
+  return state->pc + uint16_t(int8_t(nn));
+}
+
+static uint8_t get_carry_bits(uint8_t a, uint8_t b, uint8_t r) {
+  return (a & b) | ((a ^ b) & ~r);
+}
+
+uint8_t cdrom::cpu::alu_add(state_t *state, uint8_t a, uint8_t b, int carry) {
+  uint8_t r = uint8_t(a + b + carry);
+  uint8_t c = get_carry_bits(a, b, r);
+
+  state->ccr.h = (c & 0x08) != 0;
+  state->ccr.c = (c & 0x80) != 0;
+
+  return alu_tst(state, r);
+}
+
+uint8_t cdrom::cpu::alu_and(state_t *state, uint8_t data) {
+  return alu_tst(state, state->a & data);
+}
+
+uint8_t cdrom::cpu::alu_asr(state_t *state, uint8_t data) {
+  state->ccr.c = (data & 0x01) != 0;
+  data = uint8_t((data >> 1) | (data & 0x80));
+
+  return alu_tst(state, data);
+}
+
+uint8_t cdrom::cpu::alu_com(state_t *state, uint8_t data) {
+  state->ccr.c = 1;
+
+  return alu_tst(state, ~data);
+}
+
+uint8_t cdrom::cpu::alu_dec(state_t *state, uint8_t data) {
+  return alu_tst(state, --data);
+}
+
+uint8_t cdrom::cpu::alu_eor(state_t *state, uint8_t data) {
+  return alu_tst(state, state->a ^ data);
+}
+
+uint8_t cdrom::cpu::alu_inc(state_t *state, uint8_t data) {
+  return alu_tst(state, ++data);
+}
+
+uint8_t cdrom::cpu::alu_lsl(state_t *state, uint8_t data) {
+  state->ccr.c = (data & 0x80) != 0;
+  data <<= 1;
+
+  return alu_tst(state, data);
+}
+
+uint8_t cdrom::cpu::alu_lsr(state_t *state, uint8_t data) {
+  state->ccr.c = (data & 0x01) != 0;
+  data >>= 1;
+
+  return alu_tst(state, data);
+}
+
+uint8_t cdrom::cpu::alu_neg(state_t *state, uint8_t data) {
+  bool c = state->ccr.c;
+  uint8_t r = alu_sub(state, 0, data);
+
+  if (data == 0) {
+    state->ccr.c = c;
+  }
+
+  return r;
+}
+
+uint8_t cdrom::cpu::alu_ora(state_t *state, uint8_t data) {
+  return alu_tst(state, state->a | data);
+}
+
+uint8_t cdrom::cpu::alu_rol(state_t *state, uint8_t data) {
+  bool c = state->ccr.c;
+
+  state->ccr.c = (data & 0x80) != 0;
+  data = uint8_t((data << 1) | (c ? 0x01 : 0));
+
+  return alu_tst(state, data);
+}
+
+uint8_t cdrom::cpu::alu_ror(state_t *state, uint8_t data) {
+  bool c = state->ccr.c;
+
+  state->ccr.c = (data & 0x80) != 0;
+  data = uint8_t((data >> 1) | (c ? 0x80 : 0));
+
+  return alu_tst(state, data);
+}
+
+uint8_t cdrom::cpu::alu_sub(state_t *state, uint8_t a, uint8_t b, int carry) {
+  b = uint8_t(-b);
+  carry = -carry;
+
+  uint8_t r = uint8_t(a + b + carry);
+  uint8_t c = get_carry_bits(a, b, r);
+
+  state->ccr.c = (c & 0x80) != 0;
+
+  return alu_tst(state, r);
+}
+
+uint8_t cdrom::cpu::alu_tst(state_t *state, uint8_t data) {
+  state->ccr.n = data >= 0x80;
+  state->ccr.z = data == 0x00;
+
+  return data;
+}
+
+void cdrom::cpu::op_adc(state_t *state, uint16_t address) {
+  state->a = alu_add(state, state->a, read_byte(address), state->ccr.c);
+}
+
+void cdrom::cpu::op_add(state_t *state, uint16_t address) {
+  state->a = alu_add(state, state->a, read_byte(address));
+}
+
+void cdrom::cpu::op_and(state_t *state, uint16_t address) {
+  state->a = alu_and(state, read_byte(address));
+}
+
+void cdrom::cpu::op_asr(state_t *state, uint16_t address) {
+  write_byte(address, alu_asr(state, read_byte(address)));
+}
 
 void cdrom::cpu::op_asra(state_t *state) {
-  state->ccr.c = (state->a >> 0) & 1;
-  state->a = uint8_t((state->a >> 1) | (state->a & 0x80));
-  state->ccr.n = (state->a >> 7) & 1;
-  state->ccr.z = (state->a == 0);
+  state->a = alu_asr(state, state->a);
 }
-
-void cdrom::cpu::op_clra(state_t *state) {
-  state->a = 0;
-  state->ccr.n = 0;
-  state->ccr.z = 1;
-}
-
-void cdrom::cpu::op_coma(state_t *state) {
-  state->a = ~state->a;
-  state->ccr.n = state->a >= 0x80;
-  state->ccr.z = state->a == 0x00;
-  state->ccr.c = 1;
-}
-
-void cdrom::cpu::op_deca(state_t *state) {
-  state->a--;
-  state->ccr.n = state->a >= 0x80;
-  state->ccr.z = state->a == 0x00;
-}
-
-void cdrom::cpu::op_inca(state_t *state) {
-  state->a++;
-  state->ccr.n = state->a >= 0x80;
-  state->ccr.z = state->a == 0x00;
-}
-
-void cdrom::cpu::op_lsla(state_t *state) {
-  state->ccr.c = (state->a >> 7) & 1;
-  state->a <<= 1;
-  state->ccr.n = (state->a >> 7) & 1;
-  state->ccr.z = (state->a == 0);
-}
-
-void cdrom::cpu::op_lsra(state_t *state) {
-  state->ccr.c = (state->a >> 0) & 1;
-  state->a >>= 1;
-  state->ccr.n = (state->a >> 7) & 1;
-  state->ccr.z = (state->a == 0);
-}
-
-void cdrom::cpu::op_nega(state_t *state) {}
-
-void cdrom::cpu::op_rola(state_t *state) {
-  bool c = state->ccr.c;
-
-  state->ccr.c = (state->a >> 7) & 1;
-  state->a = uint8_t((state->a << 1) | (c ? 0x01 : 0));
-  state->ccr.n = (state->a >> 7) & 1;
-  state->ccr.z = (state->a == 0);
-}
-
-void cdrom::cpu::op_rora(state_t *state) {
-  bool c = state->ccr.c;
-
-  state->ccr.c = (state->a >> 0) & 1;
-  state->a = uint8_t((state->a >> 1) | (c ? 0x80 : 0));
-  state->ccr.n = (state->a >> 7) & 1;
-  state->ccr.z = (state->a == 0);
-}
-
-void cdrom::cpu::op_tsta(state_t *state) {
-  state->ccr.n = state->a >= 0x80;
-  state->ccr.z = state->a == 0x00;
-}
-
 
 void cdrom::cpu::op_asrx(state_t *state) {
-  state->ccr.c = (state->x >> 0) & 1;
-  state->x = uint8_t((state->x >> 1) | (state->x & 0x80));
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+  state->x = alu_asr(state, state->x);
 }
 
-void cdrom::cpu::op_clrx(state_t *state) {
-  state->x = 0;
-  state->ccr.n = 0;
-  state->ccr.z = 1;
+void cdrom::cpu::op_bcc(state_t *state) {
+  branch(state, state->ccr.c == 0);
 }
 
-void cdrom::cpu::op_comx(state_t *state) {
-  state->x = ~state->x;
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
-  state->ccr.c = 1;
+void cdrom::cpu::op_bclr(state_t *state, uint8_t mask, uint16_t address) {
+  uint8_t data = read_byte(address);
+
+  write_byte(address, data & ~mask);
 }
 
-void cdrom::cpu::op_decx(state_t *state) {
-  state->x--;
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bcs(state_t *state) {
+  branch(state, state->ccr.c == 1);
 }
 
-void cdrom::cpu::op_incx(state_t *state) {
-  state->x++;
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_beq(state_t *state) {
+  branch(state, state->ccr.z == 1);
 }
 
-void cdrom::cpu::op_lslx(state_t *state) {
-  state->ccr.c = (state->x >> 7) & 1;
-  state->x <<= 1;
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bhcc(state_t *state) {
+  branch(state, state->ccr.h == 0);
 }
 
-void cdrom::cpu::op_lsrx(state_t *state) {
-  state->ccr.c = (state->x >> 0) & 1;
-  state->x >>= 1;
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bhcs(state_t *state) {
+  branch(state, state->ccr.h == 1);
 }
 
-void cdrom::cpu::op_negx(state_t *state) {}
-
-void cdrom::cpu::op_rolx(state_t *state) {
-  bool c = state->ccr.c;
-
-  state->ccr.c = (state->x >> 7) & 1;
-  state->a = uint8_t((state->x << 1) | (c ? 0x01 : 0));
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bhi(state_t *state) {
+  branch(state, state->ccr.c == 0 && state->ccr.z == 0);
 }
 
-void cdrom::cpu::op_rorx(state_t *state) {
-  bool c = state->ccr.c;
-
-  state->ccr.c = (state->x >> 0) & 1;
-  state->a = uint8_t((state->x >> 1) | (c ? 0x80 : 0));
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bih(state_t *state) {
+  branch(state, state->irq == 1);
 }
 
-void cdrom::cpu::op_tstx(state_t *state) {
-  state->ccr.n = (state->x >> 7) & 1;
-  state->ccr.z = (state->x == 0);
+void cdrom::cpu::op_bil(state_t *state) {
+  branch(state, state->irq == 0);
 }
 
+void cdrom::cpu::op_bit(state_t *state, uint16_t address) {
+  alu_and(state, read_byte(address));
+}
 
-void cdrom::cpu::op_brset0(state_t *state) { }
-void cdrom::cpu::op_brclr0(state_t *state) { }
-void cdrom::cpu::op_brset1(state_t *state) { }
-void cdrom::cpu::op_brclr1(state_t *state) { }
-void cdrom::cpu::op_brset2(state_t *state) { }
-void cdrom::cpu::op_brclr2(state_t *state) { }
-void cdrom::cpu::op_brset3(state_t *state) { }
-void cdrom::cpu::op_brclr3(state_t *state) { }
-void cdrom::cpu::op_brset4(state_t *state) { }
-void cdrom::cpu::op_brclr4(state_t *state) { }
-void cdrom::cpu::op_brset5(state_t *state) { }
-void cdrom::cpu::op_brclr5(state_t *state) { }
-void cdrom::cpu::op_brset6(state_t *state) { }
-void cdrom::cpu::op_brclr6(state_t *state) { }
-void cdrom::cpu::op_brset7(state_t *state) { }
-void cdrom::cpu::op_brclr7(state_t *state) { }
+void cdrom::cpu::op_bls(state_t *state) {
+  branch(state, state->ccr.c == 1 || state->ccr.z == 1);
+}
 
+void cdrom::cpu::op_bmc(state_t *state) {
+  branch(state, state->ccr.i == 0);
+}
 
-void cdrom::cpu::op_bset0(state_t *state) { }
-void cdrom::cpu::op_bclr0(state_t *state) { }
-void cdrom::cpu::op_bset1(state_t *state) { }
-void cdrom::cpu::op_bclr1(state_t *state) { }
-void cdrom::cpu::op_bset2(state_t *state) { }
-void cdrom::cpu::op_bclr2(state_t *state) { }
-void cdrom::cpu::op_bset3(state_t *state) { }
-void cdrom::cpu::op_bclr3(state_t *state) { }
-void cdrom::cpu::op_bset4(state_t *state) { }
-void cdrom::cpu::op_bclr4(state_t *state) { }
-void cdrom::cpu::op_bset5(state_t *state) { }
-void cdrom::cpu::op_bclr5(state_t *state) { }
-void cdrom::cpu::op_bset6(state_t *state) { }
-void cdrom::cpu::op_bclr6(state_t *state) { }
-void cdrom::cpu::op_bset7(state_t *state) { }
-void cdrom::cpu::op_bclr7(state_t *state) { }
+void cdrom::cpu::op_bmi(state_t *state) {
+  branch(state, state->ccr.n == 1);
+}
 
+void cdrom::cpu::op_bms(state_t *state) {
+  branch(state, state->ccr.i == 1);
+}
 
-void cdrom::cpu::op_bra(state_t *state) { }
-void cdrom::cpu::op_brn(state_t *state) { }
-void cdrom::cpu::op_bhi(state_t *state) { }
-void cdrom::cpu::op_bls(state_t *state) { }
-void cdrom::cpu::op_bcc(state_t *state) { }
-void cdrom::cpu::op_bcs(state_t *state) { }
-void cdrom::cpu::op_bne(state_t *state) { }
-void cdrom::cpu::op_beq(state_t *state) { }
-void cdrom::cpu::op_bhcc(state_t *state) { }
-void cdrom::cpu::op_bhcs(state_t *state) { }
-void cdrom::cpu::op_bpl(state_t *state) { }
-void cdrom::cpu::op_bmi(state_t *state) { }
-void cdrom::cpu::op_bmc(state_t *state) { }
-void cdrom::cpu::op_bms(state_t *state) { }
-void cdrom::cpu::op_bil(state_t *state) { }
-void cdrom::cpu::op_bih(state_t *state) { }
+void cdrom::cpu::op_bne(state_t *state) {
+  branch(state, state->ccr.z == 0);
+}
 
+void cdrom::cpu::op_bpl(state_t *state) {
+  branch(state, state->ccr.n == 0);
+}
 
-void cdrom::cpu::op_asr(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_clr(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_com(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_dec(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_inc(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_lsl(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_lsr(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_neg(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_rol(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_ror(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_tst(state_t *state, uint16_t address) { }
+void cdrom::cpu::op_bra(state_t *state) {
+  branch(state, 1);
+}
 
+void cdrom::cpu::op_brclr(state_t *state, uint8_t mask, uint16_t address) {
+  uint8_t data = read_byte(address);
 
-void cdrom::cpu::op_sub(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_cmp(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_sbc(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_cpx(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_and(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_bit(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_lda(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_sta(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_eor(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_adc(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_ora(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_add(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_jmp(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_jsr(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_ldx(state_t *state, uint16_t address) { }
-void cdrom::cpu::op_stx(state_t *state, uint16_t address) { }
+  branch(state, (data & mask) == 0);
+}
 
+void cdrom::cpu::op_brn(state_t *state) {
+  branch(state, 0);
+}
+
+void cdrom::cpu::op_brset(state_t *state, uint8_t mask, uint16_t address) {
+  uint8_t data = read_byte(address);
+
+  branch(state, (data & mask) != 0);
+}
+
+void cdrom::cpu::op_bset(state_t *state, uint8_t mask, uint16_t address) {
+  uint8_t data = read_byte(address);
+
+  write_byte(address, data | mask);
+}
 
 void cdrom::cpu::op_clc(state_t *state) {
   state->ccr.c = 0;
@@ -544,6 +592,109 @@ void cdrom::cpu::op_clc(state_t *state) {
 
 void cdrom::cpu::op_cli(state_t *state) {
   state->ccr.i = 0;
+}
+
+void cdrom::cpu::op_clr(state_t *state, uint16_t address) {
+  write_byte(address, alu_tst(state, 0));
+}
+
+void cdrom::cpu::op_clra(state_t *state) {
+  state->a = alu_tst(state, 0);
+}
+
+void cdrom::cpu::op_clrx(state_t *state) {
+  state->x = alu_tst(state, 0);
+}
+
+void cdrom::cpu::op_cmp(state_t *state, uint16_t address) {
+  alu_sub(state, state->a, read_byte(address));
+}
+
+void cdrom::cpu::op_com(state_t *state, uint16_t address) {
+  write_byte(address, alu_com(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_coma(state_t *state) {
+  state->a = alu_com(state, state->a);
+}
+
+void cdrom::cpu::op_comx(state_t *state) {
+  state->x = alu_com(state, state->x);
+}
+
+void cdrom::cpu::op_cpx(state_t *state, uint16_t address) {
+  alu_sub(state, state->x, read_byte(address));
+}
+
+void cdrom::cpu::op_dec(state_t *state, uint16_t address) {
+  write_byte(address, alu_dec(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_deca(state_t *state) {
+  state->a = alu_dec(state, state->a);
+}
+
+void cdrom::cpu::op_decx(state_t *state) {
+  state->x = alu_dec(state, state->x);
+}
+
+void cdrom::cpu::op_eor(state_t *state, uint16_t address) {
+  state->a = alu_eor(state, read_byte(address));
+}
+
+void cdrom::cpu::op_inc(state_t *state, uint16_t address) {
+  uint8_t data = read_byte(address);
+
+  data++;
+
+  write_byte(address, data);
+
+  state->ccr.n = 0;
+  state->ccr.z = 1;
+}
+
+void cdrom::cpu::op_inca(state_t *state) {
+  state->a = alu_inc(state, state->a);
+}
+
+void cdrom::cpu::op_incx(state_t *state) {
+  state->x = alu_inc(state, state->x);
+}
+
+void cdrom::cpu::op_jmp(state_t *state, uint16_t address) {}
+
+void cdrom::cpu::op_jsr(state_t *state, uint16_t address) {}
+
+void cdrom::cpu::op_lda(state_t *state, uint16_t address) {
+  state->a = alu_tst(state, read_byte(address));
+}
+
+void cdrom::cpu::op_ldx(state_t *state, uint16_t address) {
+  state->x = alu_tst(state, read_byte(address));
+}
+
+void cdrom::cpu::op_lsl(state_t *state, uint16_t address) {
+  write_byte(address, alu_lsl(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_lsla(state_t *state) {
+  state->a = alu_lsl(state, state->a);
+}
+
+void cdrom::cpu::op_lslx(state_t *state) {
+  state->x = alu_lsl(state, state->x);
+}
+
+void cdrom::cpu::op_lsr(state_t *state, uint16_t address) {
+  write_byte(address, alu_lsr(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_lsra(state_t *state) {
+  state->a = alu_lsr(state, state->a);
+}
+
+void cdrom::cpu::op_lsrx(state_t *state) {
+  state->x = alu_lsr(state, state->x);
 }
 
 void cdrom::cpu::op_mul(state_t *state) {
@@ -555,7 +706,47 @@ void cdrom::cpu::op_mul(state_t *state) {
   state->ccr.c = 0;
 }
 
+void cdrom::cpu::op_neg(state_t *state, uint16_t address) {
+  write_byte(address, alu_neg(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_nega(state_t *state) {
+  state->a = alu_neg(state, state->a);
+}
+
+void cdrom::cpu::op_negx(state_t *state) {
+  state->x = alu_neg(state, state->x);
+}
+
 void cdrom::cpu::op_nop(state_t *state) {}
+
+void cdrom::cpu::op_ora(state_t *state, uint16_t address) {
+  state->a = alu_ora(state, read_byte(address));
+}
+
+void cdrom::cpu::op_rol(state_t *state, uint16_t address) {
+  write_byte(address, alu_rol(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_rola(state_t *state) {
+  state->a = alu_rol(state, state->a);
+}
+
+void cdrom::cpu::op_rolx(state_t *state) {
+  state->x = alu_rol(state, state->x);
+}
+
+void cdrom::cpu::op_ror(state_t *state, uint16_t address) {
+  write_byte(address, alu_ror(state, read_byte(address)));
+}
+
+void cdrom::cpu::op_rora(state_t *state) {
+  state->a = alu_ror(state, state->a);
+}
+
+void cdrom::cpu::op_rorx(state_t *state) {
+  state->x = alu_ror(state, state->x);
+}
 
 void cdrom::cpu::op_rsp(state_t *state) {
   state->sp = 0xff;
@@ -565,6 +756,10 @@ void cdrom::cpu::op_rti(state_t *state) {}
 
 void cdrom::cpu::op_rts(state_t *state) {}
 
+void cdrom::cpu::op_sbc(state_t *state, uint16_t address) {
+  state->a = alu_sub(state, state->a, read_byte(address), state->ccr.c);
+}
+
 void cdrom::cpu::op_sec(state_t *state) {
   state->ccr.c = 1;
 }
@@ -573,8 +768,20 @@ void cdrom::cpu::op_sei(state_t *state) {
   state->ccr.i = 1;
 }
 
+void cdrom::cpu::op_sub(state_t *state, uint16_t address) {
+  state->a = alu_sub(state, state->a, read_byte(address));
+}
+
+void cdrom::cpu::op_sta(state_t *state, uint16_t address) {
+  write_byte(address, alu_tst(state, state->a));
+}
+
 void cdrom::cpu::op_stop(state_t *state) {
   state->stop = 1;
+}
+
+void cdrom::cpu::op_stx(state_t *state, uint16_t address) {
+  write_byte(address, alu_tst(state, state->x));
 }
 
 void cdrom::cpu::op_swi(state_t *state) {}
@@ -583,8 +790,20 @@ void cdrom::cpu::op_tax(state_t *state) {
   state->x = state->a;
 }
 
+void cdrom::cpu::op_tst(state_t *state, uint16_t address) {
+  alu_tst(state, read_byte(address));
+}
+
 void cdrom::cpu::op_txa(state_t *state) {
   state->a = state->x;
+}
+
+void cdrom::cpu::op_tsta(state_t *state) {
+  alu_tst(state, state->a);
+}
+
+void cdrom::cpu::op_tstx(state_t *state) {
+  alu_tst(state, state->x);
 }
 
 void cdrom::cpu::op_wait(state_t *state) {
